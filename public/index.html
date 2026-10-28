@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Web Gateway</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:#0b1020;color:#eef2ff;font:16px system-ui,sans-serif;display:grid;place-items:center;padding:24px}
+main{width:min(680px,100%);background:#151c30;border:1px solid #2b3652;border-radius:24px;padding:32px;box-shadow:0 24px 80px #0005}
+.tag{color:#7dd3fc;font-size:12px;font-weight:700;letter-spacing:2px}
+h1{font-size:clamp(30px,6vw,44px);margin:12px 0}
+p{color:#aab6d0;line-height:1.6}
+form{display:flex;gap:10px;margin-top:26px}
+input{min-width:0;flex:1;background:#0b1020;border:1px solid #394663;color:white;border-radius:12px;padding:15px;font-size:15px}
+button{border:0;border-radius:12px;padding:0 20px;background:#38bdf8;color:#06111e;font-weight:700;cursor:pointer}
+button:disabled{opacity:.6}
+#result{margin-top:20px;padding:16px;border-radius:12px;background:#0b1020;white-space:pre-wrap;overflow-wrap:anywhere}
+small{display:block;color:#8492ad;margin-top:22px}
+@media(max-width:480px){form{flex-direction:column}button{padding:15px}}
+</style>
+</head>
+<body>
+<main>
+<div class="tag">DEVELOPER PREVIEW · 01</div>
+<h1>Web Gateway</h1>
+<p>A new home for your web-access project. Start by testing connectivity to an authorized destination.</p>
+<form id="form">
+<input id="url" type="text" placeholder="https://example.com" required>
+<button id="submit">Test URL</button>
+</form>
+<div id="result" role="status">Ready to test.</div>
+<small>Early development build · Backend connectivity test only</small>
+</main>
+<script>
+const form = document.querySelector("#form");
+const input = document.querySelector("#url");
+const result = document.querySelector("#result");
+const button = document.querySelector("#submit");
+
+form.addEventListener("submit", async event => {
+  event.preventDefault();
+  button.disabled = true;
+  result.textContent = "Checking destination...";
+  try {
+    const response = await fetch(
+      "/api/check?url=" + encodeURIComponent(input.value)
+    );
+    const data = await response.json();
+    result.textContent = JSON.stringify(data, null, 2);
+  } catch {
+    result.textContent = "Could not contact the backend.";
+  } finally {
+    button.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
